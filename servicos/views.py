@@ -5,9 +5,9 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView, View
 from django.contrib import messages
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.base import TemplateResponseMixin
 
 from servicos.forms import ServicoModelForm, ProdutosServicoInLine
 from servicos.models import Servico
@@ -58,7 +58,7 @@ class ServicoInLineEditView(TemplateResponseMixin, View):
     def get_formset(self, data=None):
         return ProdutosServicoInLine(instance=self.servico, data=data)
 
-    def dispath(self, request, pk):
+    def dispatch(self, request, pk):
         self.servico = get_object_or_404(Servico, id=pk)
         return super().dispatch(request, pk)
 
