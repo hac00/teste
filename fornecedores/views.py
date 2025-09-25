@@ -1,5 +1,7 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
+from django.db.models import ProtectedError
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
@@ -45,6 +47,15 @@ class FornecedorDeleteView(DeleteView):
     model = Fornecedor
     template_name = 'fornecedor_apagar.html'
     success_url = reverse_lazy('fornecedores')
+    success_message = 'Fornecedor apagado com sucesso!'
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, f'O fornecedor {self.object} não pode ser excluido. Esse fornecedor está registrado no fornecimento de produtos')
 
 # PROBLEMA NA IDENTACAO abaixo
 
@@ -67,3 +78,4 @@ class FornecedorDeleteView(SuccessMessageMixin, DeleteView):
     template_name = 'fornecedor_apagar.html'
     success_url = reverse_lazy('fornecedores')
     success_message = 'Fornecedor apagado com sucesso!'
+

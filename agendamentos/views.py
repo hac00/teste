@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 # from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from agendamentos.forms import AgendamentoListForm, AgendamentoModelForm, AgendamentosServicoInLine
 from agendamentos.models import Agendamento
@@ -13,6 +13,8 @@ from django.views import View
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 
+from produtos.models import Produto
+from servicos.models import ProdutosServico, OrdemServicos
 
 
 class AgendamentosView(ListView):
@@ -83,7 +85,45 @@ class AgendamentoInLineEditView(TemplateResponseMixin, View):
     def post(self, request, *args, **kwargs):
         formset = self.get_formset(data=request.POST)
         if formset.is_valid():
-            formset.save()
+            dados = formset.cleaned_data
+            for item in dados:
+                if item.get('situacao') != 'C':
+                    produtoservico = ProdutosServico.objects.filter(servico=item.get('servico'))
+                    if produtoservico:
+                        for prd in produtoservico:
+                            produto = Produto.objects.get(pk=prd.produto.pk)
+                            if produto.quantidade < prd.quantidade and not item.get('DELETE'):
+                                messages.error(self.request, f'Atenção! Quantidade em estoque insuficiente para o produto {produto.nome}')
+                                return self.render_to_response({'agendamento': self.agendamento, 'formset': formset})
+                            else:
+                                formset.save()
+                    else:
+                        formset.save()
             return redirect('agendamentos')
-        return self.render_to_response({'agendamento': self.agendamento, 'formset': formset})
+        else:
+            return self.render_to_response({'agendamento': self.agendamento, 'formset': formset})
+
+class AgendamentoExibir(DetailView):
+    model = Agendamento
+    template_name = 'agendamento_exibir.html'
+
+    def get_object(self, queryset=None):
+        agendamento = Agendamento.objects.get(pk=self.kwargs.get('pk'))
+        if agendamento.status == 'A':
+            ordem_servico = OrdemServicos.objects.filter(agendamento=agendamento)
+            lista_situacao = ordem_servico.values_list('situacao', flat=True)
+            if 'A' in (lista_situacao):
+                messages.info(self.request, "Ordem de serviço não pode ser encerrada. Existem serviços com a situação em aberto!")
+            else:
+                for ordem in ordem_servico:
+                    if ordem.situacao == 'R':
+                        if ordem.servico.produto:
+                            produto_servico = ProdutosServico.objects.filter(servico=ordem.servico)
+                            for item in produto_servico:
+                                produto = Produto.objects.get(pk=item.produto.pk)
+                                produto.quantidade -= item.quantidade
+                                produto.save()
+                agendamento.status = 'F'
+                agendamento.save()
+        return agendamento
 

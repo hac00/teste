@@ -39,14 +39,18 @@
                                         <td> {{ agendamento.funcionario }} </td>
                                         <td>
                                             {% for servico in agendamento.servicos %}
-                                                {% if forloop.last %}
-                                                    {{ servico }} ({{servico.get_situacao_display}})
-                                                {% else %}
-                                                    {{ servico }} ({{servico.get_situacao_display}}),
-                                                {% endif %}
+                                                {{ servico }} - R$ {{ servico.preco }} ({{servico.get_situacao_display}})
+                                            <br>
+<!--                                                {% if forloop.last %}-->
+<!--                                                    {{ servico }} ({{servico.get_situacao_display}})-->
+<!--                                                {% else %}-->
+<!--                                                    {{ servico }} ({{servico.get_situacao_display}}),-->
+<!--                                                {% endif %}-->
                                             {% endfor %}
+                                            <strong>Valor total: {{ agendamento.valor }}</strong>
                                         </td>
                                         <td style="text-align: center">
+                                            {% if agendamento.status == 'A' %}
                                                 <a href="{% url 'agendamento_inline' agendamento.pk %}">
                                                     <span class="icon">
                                                         <i class="fas fa-pencil-alt"></i>
@@ -62,6 +66,21 @@
                                                         <i class="far fa-trash-alt"></i>
                                                     </span>
                                                 </a>
+                                            {% else %}
+                                                <span class="icon">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </span>
+                                                <span class="icon">
+                                                    <i class="fas fa-edit"></i>
+                                                </span>
+                                                <span class="icon">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </span>
+                                            {% endif %}
+                                            <a href="{% url 'agendamento_exibir' agendamento.pk %}"></a>
+                                                <span class="icon">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
                                         </td>
                                     </tr>
                                 {% endfor %}
