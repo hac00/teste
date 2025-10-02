@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
@@ -19,7 +20,7 @@ from produtos.models import Produto
 from servicos.models import ProdutosServico, OrdemServicos
 
 
-class AgendamentosView(ListView):
+class AgendamentosView(LoginRequiredMixin, ListView):
     model = Agendamento
     template_name = 'agendamentos.html'
 
@@ -50,27 +51,27 @@ class AgendamentosView(ListView):
         else:
             return messages.info(self.request, 'Não existem agendamentos cadastrados!')
 
-class AgendamentoAddView(SuccessMessageMixin, CreateView):
+class AgendamentoAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Agendamento
     form_class = AgendamentoModelForm
     template_name = 'agendamento_form.html'
     success_url = reverse_lazy('agendamentos')
     success_message = 'Agendamento cadastrado com sucesso!'
 
-class AgendamentoUpdateView(SuccessMessageMixin, UpdateView):
+class AgendamentoUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Agendamento
     form_class = AgendamentoModelForm
     template_name = 'agendamento_form.html'
     success_url = reverse_lazy('agendamentos')
     success_message = 'Agendamento atualizado com sucesso!'
 
-class AgendamentoDeleteView(SuccessMessageMixin, DeleteView):
+class AgendamentoDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Agendamento
     template_name = 'agendamento_apagar.html'
     success_url = reverse_lazy('agendamentos')
     success_message = 'Agendamento apagado com sucesso!'
 
-class AgendamentoInLineEditView(TemplateResponseMixin, View):
+class AgendamentoInLineEditView(LoginRequiredMixin, TemplateResponseMixin, View):
     template_name = 'agendamento_form_inline.html'
 
     def get_formset(self, data=None):
@@ -105,7 +106,7 @@ class AgendamentoInLineEditView(TemplateResponseMixin, View):
         else:
             return self.render_to_response({'agendamento': self.agendamento, 'formset': formset})
 
-class AgendamentoExibir(DetailView):
+class AgendamentoExibir(LoginRequiredMixin, DetailView):
     model = Agendamento
     template_name = 'agendamento_exibir.html'
 
