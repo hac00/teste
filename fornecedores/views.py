@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError
@@ -11,7 +12,9 @@ from django.contrib import messages
 from .forms import FornecedorModelForm
 from .models import Fornecedor
 
-class FornecedoresView(ListView):
+class FornecedoresView(PermissionRequiredMixin, SuccessMessageMixin, ListView):
+    permission_required = 'fornecedores.view_fornecedor'
+    permission_denied_message = 'Visualizar fornecedor'
     model = Fornecedor
     template_name = 'fornecedores.html'
 
@@ -27,23 +30,26 @@ class FornecedoresView(ListView):
         else:
             return messages.info(self.request, message='Não existem fornecedores cadastrados!')
 
-
-
-
-class FornecedorAddView(CreateView):
+class FornecedorAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'fornecedores.add_fornecedor'
+    permission_denied_message = 'Cadastrar fornecedor'
     model = Fornecedor
     form_class = FornecedorModelForm
     template_name = 'fornecedor_form.html'
     success_url = reverse_lazy('fornecedores')
 
 
-class FornecedorUpdateView(UpdateView):
+class FornecedorUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'fornecedores.update_fornecedor'
+    permission_denied_message = 'Editar fornecedor'
     model = Fornecedor
     form_class = FornecedorModelForm
     template_name = 'fornecedor_form.html'
     success_url = reverse_lazy('fornecedores')
 
-class FornecedorDeleteView(DeleteView):
+class FornecedorDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    permission_required = 'fornecedores.delete_fornecedor'
+    permission_denied_message = 'Excluir fornecedor'
     model = Fornecedor
     template_name = 'fornecedor_apagar.html'
     success_url = reverse_lazy('fornecedores')
@@ -56,26 +62,3 @@ class FornecedorDeleteView(DeleteView):
             return super().post(request, *args, **kwargs)
         except ProtectedError:
             messages.error(request, f'O fornecedor {self.object} não pode ser excluido. Esse fornecedor está registrado no fornecimento de produtos')
-
-# PROBLEMA NA IDENTACAO abaixo
-
-class FornecedorAddView(SuccessMessageMixin, CreateView):
-    model = Fornecedor
-    form_class = FornecedorModelForm
-    template_name = 'fornecedor_form.html'
-    success_url = reverse_lazy('fornecedores')
-    success_message = 'Fornecedor cadastrado com sucesso!'
-
-class FornecedorUpdateView(SuccessMessageMixin, UpdateView):
-    model = Fornecedor
-    form_class = FornecedorModelForm
-    template_name = 'fornecedor_form.html'
-    success_url = reverse_lazy('fornecedores')
-    success_message = 'Fornecedor alterado com sucesso!'
-
-class FornecedorDeleteView(SuccessMessageMixin, DeleteView):
-    model = Fornecedor
-    template_name = 'fornecedor_apagar.html'
-    success_url = reverse_lazy('fornecedores')
-    success_message = 'Fornecedor apagado com sucesso!'
-
