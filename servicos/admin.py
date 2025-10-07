@@ -1,7 +1,7 @@
-# from produtosservico.models import ProdutosServico
 # from django.contrib.gis import admin
 #
-# from .models import Servico
+# from .models import Servico, ProdutosServico
+#
 #
 # class ProdutoServicoInLine(admin.TabularInline):
 #     model = ProdutosServico
