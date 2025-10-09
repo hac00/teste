@@ -10,5 +10,5 @@ urlpatterns = [
     path('<int:pk>/agendamento/apagar', AgendamentoDeleteView.as_view(), name='agendamento_apagar'),
     path('<int:pk>/agendamento/inline', AgendamentoInLineEditView.as_view(), name='agendamento_inline'),
     path('<int:pk>/agendamento/exibir', AgendamentoExibir.as_view(), name='agendamento_exibir'),
-    path('agendamentos/grafico', AgendamentosGraficoView.as_view(), name='agendamento_grafico'),
+    path('agendamentos/grafico', AgendamentosGraficoView.as_view(), name='agendamentos_grafico'),
 ]
