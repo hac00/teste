@@ -25,38 +25,38 @@
                         </table>
                     </div>
                 </div>
-            <div class="col-6">
-                {% language 'en' %}
-                <canvas id="Grafico" width="800" height="400"></canvas>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <scrit>
-                    const ctx = document.GetElementById('Grafico').getContext('2d');
-                    const myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: [{% for item in object_list.values %} "{{item.horario}}", {% endfor %}],
-                                datasets: [{
-                                    label: "Curva dos valores recebidos",
-                                    data: [{% for item in object_list.values %}{{  item.valor }}, {% endfor %}],
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1),
-                                    borderWidth: 2,
-                                    pointRadius: 0,
-                                    fill: false,
-                                    tension: 0,4
-                                }]
-                            },
-                        options: {
-                            scale: {
-                                y: {
-                                    beginAtZero: true
+                <div class="col-6">
+                    {% language 'en' %}
+                    <canvas id="Grafico" width="800" height="400"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <scrit>
+                        const ctx = document.GetElementById('Grafico').getContext('2d');
+                        const myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: [{% for item in object_list.values %} "{{item.horario}}", {% endfor %}],
+                                    datasets: [{
+                                        label: "Curva dos valores recebidos",
+                                        data: [{% for item in object_list.values %}{{  item.valor }}, {% endfor %}],
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        borderColor: 'rgba(75, 192, 192, 1),
+                                        borderWidth: 2,
+                                        pointRadius: 0,
+                                        fill: false,
+                                        tension: 0,4
+                                    }]
+                                },
+                            options: {
+                                scale: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
                                 }
                             }
-                        }
-                    });
-                </scrit>
-                {% endlanguage %}
-            </div>
+                        });
+                    </scrit>
+                    {% endlanguage %}
+                </div>
+            {% endif %}
         </div>
-        {% endif %}
     </section>
